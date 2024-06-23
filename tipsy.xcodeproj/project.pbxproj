@@ -10,6 +10,7 @@
 		8161EDEC2C281E8F0016C7C0 /* ChatGPT in Frameworks */ = {isa = PBXBuildFile; productRef = 8161EDEB2C281E8F0016C7C0 /* ChatGPT */; };
 		8161EDEE2C281E8F0016C7C0 /* GPT in Frameworks */ = {isa = PBXBuildFile; productRef = 8161EDED2C281E8F0016C7C0 /* GPT */; };
 		8161EDF02C281E8F0016C7C0 /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 8161EDEF2C281E8F0016C7C0 /* OpenAI */; };
+		8161EDF32C286BD70016C7C0 /* temp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8161EDF22C286BD70016C7C0 /* temp.swift */; };
 		F01B7DCC2C27A1F000B9FCC2 /* tipsyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01B7DCB2C27A1F000B9FCC2 /* tipsyApp.swift */; };
 		F01B7DCE2C27A1F000B9FCC2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01B7DCD2C27A1F000B9FCC2 /* ContentView.swift */; };
 		F01B7DD02C27A1F100B9FCC2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F01B7DCF2C27A1F100B9FCC2 /* Assets.xcassets */; };
@@ -37,6 +38,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8161EDF22C286BD70016C7C0 /* temp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = temp.swift; sourceTree = "<group>"; };
 		F01B7DC82C27A1F000B9FCC2 /* tipsy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = tipsy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F01B7DCB2C27A1F000B9FCC2 /* tipsyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tipsyApp.swift; sourceTree = "<group>"; };
 		F01B7DCD2C27A1F000B9FCC2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -80,6 +82,7 @@
 		F01B7DBF2C27A1F000B9FCC2 = {
 			isa = PBXGroup;
 			children = (
+				8161EDF22C286BD70016C7C0 /* temp.swift */,
 				F01B7DCA2C27A1F000B9FCC2 /* tipsy */,
 				F01B7DDB2C27A1F100B9FCC2 /* tipsyTests */,
 				F01B7DE52C27A1F100B9FCC2 /* tipsyUITests */,
@@ -228,6 +231,7 @@
 			mainGroup = F01B7DBF2C27A1F000B9FCC2;
 			packageReferences = (
 				8161EDEA2C281E8F0016C7C0 /* XCRemoteSwiftPackageReference "GPTSwift" */,
+				8161EDF12C2837600016C7C0 /* XCRemoteSwiftPackageReference "emojica" */,
 			);
 			productRefGroup = F01B7DC92C27A1F000B9FCC2 /* Products */;
 			projectDirPath = "";
@@ -273,6 +277,7 @@
 			files = (
 				F01B7DCE2C27A1F000B9FCC2 /* ContentView.swift in Sources */,
 				F01B7DCC2C27A1F000B9FCC2 /* tipsyApp.swift in Sources */,
+				8161EDF32C286BD70016C7C0 /* temp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -604,6 +609,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 3.0.1;
+			};
+		};
+		8161EDF12C2837600016C7C0 /* XCRemoteSwiftPackageReference "emojica" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/xoudini/emojica";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.7;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

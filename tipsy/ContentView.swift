@@ -1,5 +1,76 @@
 import SwiftUI
 import ChatGPT
+import CoreLocation
+import UserNotifications
+
+ var variableUserInput = ""
+
+class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+    private var locationManager = CLLocationManager()
+    @Published var currentLocation: CLLocation?
+    var barsAndNightclubs: [CLLocation] = [
+        CLLocation(latitude: 37.867993, longitude: -122.259592),
+        CLLocation(latitude: 37.867802, longitude: -122.268119),
+        CLLocation(latitude: 37.87173, longitude: -122.268678),
+        CLLocation(latitude: 37.87265, longitude: -122.268756),
+        CLLocation(latitude: 37.867638, longitude: -122.262708),
+        CLLocation(latitude: 37.868144, longitude: -122.267558),
+        CLLocation(latitude: 37.870567, longitude: -122.266864),
+        CLLocation(latitude: 37.867686, longitude: -122.291469),
+        CLLocation(latitude: 37.867006, longitude: -122.266146),
+        CLLocation(latitude: 37.867097, longitude: -122.267355),
+        CLLocation(latitude: 37.866252, longitude: -122.258862),
+        CLLocation(latitude: 37.867672, longitude: -122.258142),
+        CLLocation(latitude: 37.869796, longitude: -122.267582)
+    ]
+    
+    override init() {
+        super.init()
+        locationManager.delegate = self
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.last {
+            currentLocation = location
+            checkIfAtBarOrNightclub(location: location)
+        }
+    }
+    
+    private func checkIfAtBarOrNightclub(location: CLLocation) {
+        for barOrNightclub in barsAndNightclubs {
+            if location.distance(from: barOrNightclub) < 20 {
+                sendTestNotification()
+                break
+            }
+        }
+    }
+    
+    private func sendTestNotification() {
+        let content = UNMutableNotificationContent()
+        content.title = "TipsyPal Alert"
+        content.body = "It seems like you're at or near a bar or nightclub! Remember to drink responsibly John."
+        content.sound = UNNotificationSound.default
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print(error.localizedDescription)
+            } else {
+                print("Notification scheduled successfully")
+            }
+        }
+    }
+    
+    func simulateLocation(latitude: Double, longitude: Double) {
+        let simulatedLocation = CLLocation(latitude: latitude, longitude: longitude)
+        self.locationManager(self.locationManager, didUpdateLocations: [simulatedLocation])
+    }
+}
 
 struct ContentView: View {
     var body: some View {
@@ -21,6 +92,10 @@ struct ContentView: View {
 struct CalendarView: View {
     @State private var currentDate = Date()
     @State private var displayedMonth = Date()
+    
+    
+    
+    
     
     var body: some View {
         NavigationView {
@@ -57,7 +132,7 @@ struct CalendarView: View {
                     .padding(.horizontal)
                     .padding(.vertical, 10)
             }
-            .background(LinearGradient(gradient: Gradient(colors: [.white, .blue.opacity(0.1)]), startPoint: .top, endPoint: .bottom).ignoresSafeArea())
+            //.background(LinearGradient(gradient: Gradient(colors: [.blue.opacity(0.1), .white]), startPoint: .top, endPoint: .bottom).ignoresSafeArea())
             .navigationTitle("Calendar")
         }
     }
@@ -87,26 +162,25 @@ struct CalendarGridView: View {
             ForEach(days, id: \.self) { date in
                 ZStack {
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(isToday(date: date) ? Color.blue.opacity(0.7) : Color.gray.opacity(0.2))
+                        .fill(isToday(date: date) ? Color.blue.opacity(0.7) : Color.blue.opacity(0.2))
                         .frame(height: 50)
+                    CalendarCell(date:date)
                     
                     VStack {
                         HStack {
-                            Spacer()
                             Text(dayString(from: date))
                                 .font(.caption)
-                                .padding(5)
-                                .background(Color.white.opacity(0.8))
+                                //.padding(5)
+
                                 .cornerRadius(8)
                                 .padding(5)
                                 .foregroundColor(isCurrentMonth(date: date) ? .primary : .gray)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.5)
                         }
-                        Spacer()
                     }
                 }
-                .frame(height: 50)
+                .frame(height: 60)
             }
         }
         .padding()
@@ -171,34 +245,110 @@ struct CalendarGridView: View {
     }
 }
 
-struct TipsyPalView: View {
-    @State private var userInput = ""
-    @State private var messages: [String] = ["Hello! How can I help you today?"]
+
+struct CalendarCell: View {
+    let date: Date
+    
+    var status: String {
+        getStatus(for: date)
+    }
     
     var body: some View {
-        NavigationView {
-            VStack {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 10) {
-                        ForEach(messages, id: \.self) { message in
-                            Text(message)
-                                .padding()
-                                .background(Color.blue.opacity(0.1))
-                                .cornerRadius(10)
-                                .padding(.vertical, 2)
+        
+        VStack {
+            Spacer()
+            Text(emoji(for: status))
+                .font(.system(size: 10))
+    
+        }
+        .padding(10)
+    }
+    
+    func stripTime(from originalDate: Date) -> Date {
+        let components = Calendar.current.dateComponents([.year, .month, .day], from: originalDate)
+        let date = Calendar.current.date(from: components)
+        return date!
+    }
+
+
+    
+    func getStatus(for date: Date) -> String {
+        // Replace this logic with your actual status determination logic
+        let day = Calendar.current.component(.day, from: date)
+        
+        if stripTime(from: date) > stripTime(from: Date()) {
+            return ""
+        }
+        switch day % 7 {
+            case 0:
+                return "warning"
+            case 1:
+                return "cross"
+            case 2: 
+                return "cross"
+            default:
+                return "check"
+        }
+        }
+    
+    func emoji(for status: String) -> String {
+        switch status {
+        case "check":
+            return "🎉"
+        case "cross":
+            return "❌"
+        case "warning":
+            return "⚠️"
+        default:
+            return ""
+        }
+    }
+}
+
+struct TipsyPalView: View {
+    @StateObject private var locationManager = LocationManager()
+    @State private var userInput = ""
+    @State private var messages: [String] = ["Hey John! What can I help you with?"]
+    
+    var body: some View {
+            NavigationView {
+                VStack {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 10) {
+                            ForEach(messages, id: \.self) { message in
+                                HStack {
+                                    if message.starts(with: "You:") {
+                                        Spacer()
+                                        Text(message)
+                                            .padding()
+                                            .background(Color.blue.opacity(0.15))
+                                            .cornerRadius(10)
+                                            .padding(.vertical, 2)
+                                            .foregroundColor(.black)
+                                    } else {
+                                        Text(message)
+                                            .padding()
+                                            .background(Color.gray.opacity(0.1))
+                                            .cornerRadius(10)
+                                            .padding(.vertical, 2)
+                                            .foregroundColor(.black)
+                                        Spacer()
+                                    }
+                                }
+                            }
                         }
-                    }
-                    .padding()
+                        .padding()
                 }
                 
                 HStack {
                     TextField("Enter your message", text: $userInput)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .padding(.vertical, 10)
+                        .onSubmit {
+                            Task { await sendMessage() }
+                        }
                     
-                    Button(action: { Task { await sendMessage() } } )
-                    
-                    {
+                    Button(action: { Task { await sendMessage() } }) {
                         Image(systemName: "paperplane.fill")
                             .padding()
                             .background(Color.blue)
@@ -207,46 +357,72 @@ struct TipsyPalView: View {
                     }
                 }
                 .padding()
+                
+                Button(action: {
+                    locationManager.simulateLocation(latitude: 37.867991, longitude: -122.259591) // Simulate location for testing
+                               }) {
+                                   Text("")
+                                       .padding()
+                                       .background(Color.white)
+                                       .foregroundColor(.white)
+                                       .cornerRadius(10)
+                               }
+                               .padding(.top, 20)
+                           }
+                           .navigationTitle("TipsyPal")
+                       }
+            .onAppear {
+                let notificationCenter = UNUserNotificationCenter.current()
+                notificationCenter.delegate = NotificationDelegate()
+                notificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+                    if let error = error {
+                        print("Error requesting notifications permission: \(error.localizedDescription)")
+                    } else if granted {
+                        print("Notifications permission granted")
+                    } else {
+                        print("Notifications permission denied")
+                    }
+                }
             }
-            .navigationTitle("TipsyPal")
         }
-    }
     
     private func sendMessage() async {
         let userMessage = userInput.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !userMessage.isEmpty else { return }
         
         messages.append("You: \(userMessage)")
+        variableUserInput = userMessage
         userInput = ""
         
         do {
             let response = try await askChatGPT()
+            let cleanResponse = response.replacingOccurrences(of: "\"", with: "")
             DispatchQueue.main.async {
-                messages.append("\(response)")
+                messages.append("TipsyPal: " + cleanResponse)
             }
-            
-        }
-        catch{
+        } catch {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                messages.append("ChatGPT: I'm sorry, I can't actually respond right now. But imagine I gave you a great response!")
+                messages.append("TipsyPal: I'm sorry, I can't actually respond right now. But imagine I gave you a great response!")
             }
         }
-    
     }
     
-    private func askChatGPT() async throws -> String{
+    private func askChatGPT() async throws -> String {
         let chatGPT = ChatGPT(apiKey: "sk-proj-GmMF5ysPaGwN6FhHLI76T3BlbkFJ8elAnJASvNzRuFuHuJIj", defaultModel: .gpt4)
         let response = try await chatGPT.ask(
             messages: [
-                ChatMessage(role: .system, content:  "I am a person who is a recreational drinker. I'd like to either become/stay sober or manage my drinking habits more responsibly. I'd like for you to play the role as my close friend who's trying to get me home safe and get through my circumstance. Do this by composing brief yet articulated responses to help me through what I am going through as outlined by my message. Speak as if you were my companion and close friend, not in a mundane, generic, or robotic manner with short, readable sentences. Again, generic/non-tailored responses are unacceptance and could have drastic effects. Provide USABLE, SPECIFIC, and NON-GENERIC feedback, and tailor it to me as you learn more about my situation. REMEMBER, the person you are talking to may be drunk, so keep your responses to the point. If needed, use emojis (max 2) or emoticons (max 2), but only use them when the response fits. Feel free to up to 5 sentences, easy to understand wording, etc. Of utmost importance is speaking with compassion to the user in order to make the user feel safe and at ease in order to track habits. Please respond to this message with this in mind: userMessage"),
+                ChatMessage(role: .system, content: "You are helping a person who is a recreational drinker. This person (me, name: John) would like to either become/stay sober or manage my drinking habits more responsibly. This should be among the first questions you ask me, so you can better understand your role as a companion. I'd like for you to play the role as my close friend who's trying to help me through my SPECIFIC circumstance. Do this by composing brief yet articulated responses to help me through what I am going through as outlined by my message. Speak as if you were my companion and close friend, not in a mundane, generic, or robotic manner with short, readable sentences. Generic/non-tailored responses are unacceptance and could have drastic effects. Provide USABLE, SPECIFIC, and NON-GENERIC feedback, and tailor it to me as you learn more about my situation. REMEMBER, the person you are talking to may be drunk, so keep your responses to the point. Write up to 5 sentences if and ONLY if needed with easy to understand wording, etc. Of utmost importance is taking it step by step by asking one question at a time as to not overwhelm or disengage the user, and speaking with compassion to the user in order to make the user feel safe and at ease in order to track habits or stay sober and not give in to temptations. Please respond to this message with this in mind: userMessage"),
                 ChatMessage(role: .user, content: userInput)
             ]
         )
         return response
-
     }
-    
-    
+}
+
+class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.alert, .sound])
+    }
 }
 
 extension Color {
