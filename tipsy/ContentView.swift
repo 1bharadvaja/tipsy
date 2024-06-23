@@ -284,7 +284,7 @@ struct CalendarCell: View {
                 return "warning"
             case 1:
                 return "cross"
-            case 2: 
+            case 2:
                 return "cross"
             default:
                 return "check"
@@ -432,3 +432,4 @@ extension Color {
 #Preview {
     ContentView()
 }
+
