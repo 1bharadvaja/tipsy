@@ -13,6 +13,7 @@ struct ContentView: View {
                     Label("TipsyPal", systemImage: "person.fill")
                 }
         }
+        .accentColor(.blue)
     }
 }
 
@@ -29,32 +30,33 @@ struct CalendarView: View {
                     }) {
                         Image(systemName: "chevron.left")
                             .padding()
-                            .background(Color.maroon)
+                            .background(Color.blue.opacity(0.8))
                             .foregroundColor(.white)
                             .clipShape(Circle())
                     }
                     Spacer()
                     Text(monthYearString(from: displayedMonth))
-                        .font(.custom("MarkerFelt-Wide", size: 32))
-                        .foregroundColor(.maroon)
+                        .font(.custom("Avenir-Heavy", size: 24))
+                        .foregroundColor(.blue)
                     Spacer()
                     Button(action: {
                         changeMonth(by: 1)
                     }) {
                         Image(systemName: "chevron.right")
                             .padding()
-                            .background(Color.maroon)
+                            .background(Color.blue.opacity(0.8))
                             .foregroundColor(.white)
                             .clipShape(Circle())
                     }
                 }
-                .padding()
+                .padding(.horizontal)
+                .padding(.vertical, 10)
                 
                 CalendarGridView(currentDate: $currentDate, displayedMonth: $displayedMonth)
-                    .padding()
+                    .padding(.horizontal)
+                    .padding(.vertical, 10)
             }
-            .padding()
-            .background(Color.brown.opacity(0.1))
+            .background(LinearGradient(gradient: Gradient(colors: [.white, .blue.opacity(0.1)]), startPoint: .top, endPoint: .bottom).ignoresSafeArea())
             .navigationTitle("Calendar")
         }
     }
@@ -80,12 +82,12 @@ struct CalendarGridView: View {
         let days = generateDays(for: displayedMonth)
         let columns = Array(repeating: GridItem(.flexible()), count: 7)
         
-        LazyVGrid(columns: columns, spacing: 10) {
+        LazyVGrid(columns: columns, spacing: 15) {
             ForEach(days, id: \.self) { date in
                 ZStack {
-                    Rectangle()
-                        .fill(Color.maroon.opacity(isToday(date: date) ? 1 : 0.3))
-                        .cornerRadius(10)
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(isToday(date: date) ? Color.blue.opacity(0.7) : Color.gray.opacity(0.2))
+                        .frame(height: 50)
                     
                     VStack {
                         HStack {
@@ -93,8 +95,8 @@ struct CalendarGridView: View {
                             Text(dayString(from: date))
                                 .font(.caption)
                                 .padding(5)
-                                .background(Color.white.opacity(0.7))
-                                .cornerRadius(5)
+                                .background(Color.white.opacity(0.8))
+                                .cornerRadius(8)
                                 .padding(5)
                                 .foregroundColor(isCurrentMonth(date: date) ? .primary : .gray)
                                 .lineLimit(1)
@@ -106,6 +108,7 @@ struct CalendarGridView: View {
                 .frame(height: 50)
             }
         }
+        .padding()
     }
     
     private func generateDays(for date: Date) -> [Date] {
@@ -118,7 +121,6 @@ struct CalendarGridView: View {
         
         var days: [Date] = []
         
-        // Fill in the days of the previous month to align the first weekday
         let previousMonthPadding = (monthStartWeekday + 5) % 7 // +5 to adjust for Saturday start
         if previousMonthPadding > 0 {
             let previousMonth = calendar.date(byAdding: .month, value: -1, to: monthStart)!
@@ -133,7 +135,6 @@ struct CalendarGridView: View {
         
         days.append(contentsOf: range.map { calendar.date(byAdding: .day, value: $0 - 1, to: monthStart)! })
         
-        // Fill in the days of the next month to complete the last week
         let totalDays = days.count
         if totalDays % 7 != 0 {
             let nextMonthPadding = 7 - (totalDays % 7)
@@ -177,11 +178,11 @@ struct TipsyPalView: View {
         NavigationView {
             VStack {
                 ScrollView {
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 10) {
                         ForEach(messages, id: \.self) { message in
                             Text(message)
                                 .padding()
-                                .background(Color.gray.opacity(0.2))
+                                .background(Color.blue.opacity(0.1))
                                 .cornerRadius(10)
                                 .padding(.vertical, 2)
                         }
@@ -192,14 +193,14 @@ struct TipsyPalView: View {
                 HStack {
                     TextField("Enter your message", text: $userInput)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .frame(minHeight: 30)
+                        .padding(.vertical, 10)
                     
                     Button(action: sendMessage) {
-                        Text("Send")
+                        Image(systemName: "paperplane.fill")
                             .padding()
-                            .background(Color.maroon)
+                            .background(Color.blue)
                             .foregroundColor(.white)
-                            .cornerRadius(10)
+                            .clipShape(Circle())
                     }
                 }
                 .padding()
