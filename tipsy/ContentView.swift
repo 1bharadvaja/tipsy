@@ -1,4 +1,5 @@
 import SwiftUI
+import ChatGPT
 
 struct ContentView: View {
     var body: some View {
@@ -220,6 +221,20 @@ struct TipsyPalView: View {
             messages.append("ChatGPT: I'm sorry, I can't actually respond right now. But imagine I gave you a great response!")
         }
     }
+    
+    private func askChatGPT() async throws{
+        let chatGPT = ChatGPT(apiKey: "sk-proj-GmMF5ysPaGwN6FhHLI76T3BlbkFJ8elAnJASvNzRuFuHuJIj", defaultModel: .gpt4)
+        let response = try await chatGPT.ask(
+            messages: [
+                ChatMessage(role: .system, content:  "I am a person who is a recreational drinker. I'd like to either become/stay sober or manage my drinking habits more responsibly. I'd like for you to play the role as my close friend who's trying to get me home safe and get through my circumstance. Do this by composing brief yet articulated responses to help me through what I am going through as outlined by my message. Speak as if you were my companion and close friend, not in a mundane, generic, or robotic manner with short, readable sentences. Again, generic/non-tailored responses are unacceptance and could have drastic effects. Provide USABLE, SPECIFIC, and NON-GENERIC feedback, and tailor it to me as you learn more about my situation. REMEMBER, the person you are talking to may be drunk, so keep your responses to the point. If needed, use emojis (max 2) or emoticons (max 2), but only use them when the response fits. Feel free to up to 5 sentences, easy to understand wording, etc. Of utmost importance is speaking with compassion to the user in order to make the user feel safe and at ease in order to track habits. Please respond to this message with this in mind: userMessage"),
+                ChatMessage(role: .user, content: userInput)
+            ]
+        )
+        print(response)
+
+    }
+    
+    
 }
 
 extension Color {
