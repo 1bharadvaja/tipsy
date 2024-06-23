@@ -1,43 +1,62 @@
 import SwiftUI
 
 struct ContentView: View {
+    var body: some View {
+        TabView {
+            CalendarView()
+                .tabItem {
+                    Label("Calendar", systemImage: "calendar")
+                }
+            
+            TipsyPalView()
+                .tabItem {
+                    Label("TipsyPal", systemImage: "person.fill")
+                }
+        }
+    }
+}
+
+struct CalendarView: View {
     @State private var currentDate = Date()
     @State private var displayedMonth = Date()
     
     var body: some View {
-        VStack {
-            HStack {
-                Button(action: {
-                    changeMonth(by: -1)
-                }) {
-                    Image(systemName: "chevron.left")
-                        .padding()
-                        .background(Color.maroon)
-                        .foregroundColor(.white)
-                        .clipShape(Circle())
+        NavigationView {
+            VStack {
+                HStack {
+                    Button(action: {
+                        changeMonth(by: -1)
+                    }) {
+                        Image(systemName: "chevron.left")
+                            .padding()
+                            .background(Color.maroon)
+                            .foregroundColor(.white)
+                            .clipShape(Circle())
+                    }
+                    Spacer()
+                    Text(monthYearString(from: displayedMonth))
+                        .font(.custom("MarkerFelt-Wide", size: 32))
+                        .foregroundColor(.maroon)
+                    Spacer()
+                    Button(action: {
+                        changeMonth(by: 1)
+                    }) {
+                        Image(systemName: "chevron.right")
+                            .padding()
+                            .background(Color.maroon)
+                            .foregroundColor(.white)
+                            .clipShape(Circle())
+                    }
                 }
-                Spacer()
-                Text(monthYearString(from: displayedMonth))
-                    .font(.custom("MarkerFelt-Wide", size: 32))
-                    .foregroundColor(.maroon)
-                Spacer()
-                Button(action: {
-                    changeMonth(by: 1)
-                }) {
-                    Image(systemName: "chevron.right")
-                        .padding()
-                        .background(Color.maroon)
-                        .foregroundColor(.white)
-                        .clipShape(Circle())
-                }
+                .padding()
+                
+                CalendarGridView(currentDate: $currentDate, displayedMonth: $displayedMonth)
+                    .padding()
             }
             .padding()
-            
-            CalendarView(currentDate: $currentDate, displayedMonth: $displayedMonth)
-                .padding()
+            .background(Color.brown.opacity(0.1))
+            .navigationTitle("Calendar")
         }
-        .padding()
-        .background(Color.brown.opacity(0.1))
     }
     
     private func changeMonth(by value: Int) {
@@ -53,7 +72,7 @@ struct ContentView: View {
     }
 }
 
-struct CalendarView: View {
+struct CalendarGridView: View {
     @Binding var currentDate: Date
     @Binding var displayedMonth: Date
     
@@ -147,6 +166,58 @@ struct CalendarView: View {
         let displayedMonthComponents = Calendar.current.dateComponents([.year, .month], from: displayedMonth)
         let dateComponents = Calendar.current.dateComponents([.year, .month], from: date)
         return displayedMonthComponents.year == dateComponents.year && displayedMonthComponents.month == dateComponents.month
+    }
+}
+
+struct TipsyPalView: View {
+    @State private var userInput = ""
+    @State private var messages: [String] = ["Hello! How can I help you today?"]
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                ScrollView {
+                    VStack(alignment: .leading) {
+                        ForEach(messages, id: \.self) { message in
+                            Text(message)
+                                .padding()
+                                .background(Color.gray.opacity(0.2))
+                                .cornerRadius(10)
+                                .padding(.vertical, 2)
+                        }
+                    }
+                    .padding()
+                }
+                
+                HStack {
+                    TextField("Enter your message", text: $userInput)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .frame(minHeight: 30)
+                    
+                    Button(action: sendMessage) {
+                        Text("Send")
+                            .padding()
+                            .background(Color.maroon)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                    }
+                }
+                .padding()
+            }
+            .navigationTitle("TipsyPal")
+        }
+    }
+    
+    private func sendMessage() {
+        let userMessage = userInput.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !userMessage.isEmpty else { return }
+        
+        messages.append("You: \(userMessage)")
+        userInput = ""
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            messages.append("ChatGPT: I'm sorry, I can't actually respond right now. But imagine I gave you a great response!")
+        }
     }
 }
 
