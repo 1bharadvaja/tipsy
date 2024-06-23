@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8161EDEC2C281E8F0016C7C0 /* ChatGPT in Frameworks */ = {isa = PBXBuildFile; productRef = 8161EDEB2C281E8F0016C7C0 /* ChatGPT */; };
+		8161EDEE2C281E8F0016C7C0 /* GPT in Frameworks */ = {isa = PBXBuildFile; productRef = 8161EDED2C281E8F0016C7C0 /* GPT */; };
+		8161EDF02C281E8F0016C7C0 /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 8161EDEF2C281E8F0016C7C0 /* OpenAI */; };
 		F01B7DCC2C27A1F000B9FCC2 /* tipsyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01B7DCB2C27A1F000B9FCC2 /* tipsyApp.swift */; };
 		F01B7DCE2C27A1F000B9FCC2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01B7DCD2C27A1F000B9FCC2 /* ContentView.swift */; };
 		F01B7DD02C27A1F100B9FCC2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F01B7DCF2C27A1F100B9FCC2 /* Assets.xcassets */; };
@@ -51,6 +54,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8161EDEE2C281E8F0016C7C0 /* GPT in Frameworks */,
+				8161EDF02C281E8F0016C7C0 /* OpenAI in Frameworks */,
+				8161EDEC2C281E8F0016C7C0 /* ChatGPT in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,6 +149,11 @@
 			dependencies = (
 			);
 			name = tipsy;
+			packageProductDependencies = (
+				8161EDEB2C281E8F0016C7C0 /* ChatGPT */,
+				8161EDED2C281E8F0016C7C0 /* GPT */,
+				8161EDEF2C281E8F0016C7C0 /* OpenAI */,
+			);
 			productName = tipsy;
 			productReference = F01B7DC82C27A1F000B9FCC2 /* tipsy.app */;
 			productType = "com.apple.product-type.application";
@@ -215,6 +226,9 @@
 				Base,
 			);
 			mainGroup = F01B7DBF2C27A1F000B9FCC2;
+			packageReferences = (
+				8161EDEA2C281E8F0016C7C0 /* XCRemoteSwiftPackageReference "GPTSwift" */,
+			);
 			productRefGroup = F01B7DC92C27A1F000B9FCC2 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -582,6 +596,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8161EDEA2C281E8F0016C7C0 /* XCRemoteSwiftPackageReference "GPTSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftedMind/GPTSwift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8161EDEB2C281E8F0016C7C0 /* ChatGPT */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8161EDEA2C281E8F0016C7C0 /* XCRemoteSwiftPackageReference "GPTSwift" */;
+			productName = ChatGPT;
+		};
+		8161EDED2C281E8F0016C7C0 /* GPT */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8161EDEA2C281E8F0016C7C0 /* XCRemoteSwiftPackageReference "GPTSwift" */;
+			productName = GPT;
+		};
+		8161EDEF2C281E8F0016C7C0 /* OpenAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8161EDEA2C281E8F0016C7C0 /* XCRemoteSwiftPackageReference "GPTSwift" */;
+			productName = OpenAI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F01B7DC02C27A1F000B9FCC2 /* Project object */;
 }

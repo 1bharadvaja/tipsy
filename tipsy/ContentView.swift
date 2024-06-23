@@ -196,7 +196,9 @@ struct TipsyPalView: View {
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .padding(.vertical, 10)
                     
-                    Button(action: sendMessage) {
+                    Button(action: { Task { await sendMessage() } } )
+                    
+                    {
                         Image(systemName: "paperplane.fill")
                             .padding()
                             .background(Color.blue)
@@ -210,19 +212,29 @@ struct TipsyPalView: View {
         }
     }
     
-    private func sendMessage() {
+    private func sendMessage() async {
         let userMessage = userInput.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !userMessage.isEmpty else { return }
         
         messages.append("You: \(userMessage)")
         userInput = ""
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            messages.append("ChatGPT: I'm sorry, I can't actually respond right now. But imagine I gave you a great response!")
+        do {
+            let response = try await askChatGPT()
+            DispatchQueue.main.async {
+                messages.append("\(response)")
+            }
+            
         }
+        catch{
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                messages.append("ChatGPT: I'm sorry, I can't actually respond right now. But imagine I gave you a great response!")
+            }
+        }
+    
     }
     
-    private func askChatGPT() async throws{
+    private func askChatGPT() async throws -> String{
         let chatGPT = ChatGPT(apiKey: "sk-proj-GmMF5ysPaGwN6FhHLI76T3BlbkFJ8elAnJASvNzRuFuHuJIj", defaultModel: .gpt4)
         let response = try await chatGPT.ask(
             messages: [
@@ -230,7 +242,7 @@ struct TipsyPalView: View {
                 ChatMessage(role: .user, content: userInput)
             ]
         )
-        print(response)
+        return response
 
     }
     
