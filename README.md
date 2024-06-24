@@ -1,3 +1,3 @@
 # tipsy
 
-Built @ CalHacks Summer 
+Built @ CalHacks Summer, fully in Swift 
